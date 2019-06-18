@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var chatAdapter: ArrayAdapter<String>
     lateinit var chatMessages: ArrayList<String>
 
-
     val MESSAGE_STATE_CHANGE = 1
     val MESSAGE_READ = 2
     val MESSAGE_WRITE = 3
@@ -36,10 +35,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this,"El Bluetooth no está disponible",Toast.LENGTH_SHORT).show()
             finish()
         }
-        if(!bluetoothAdapter.isEnabled)
-        {
+
+
+        if (!bluetoothAdapter.isEnabled) {
             val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, 1)
+            //startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH)
+        } else {
+            //onlineChat = OnlineChat(this, handler)
         }
     }
 
