@@ -13,6 +13,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if(bluetoothAdapter == null)
+        {
+            Toast.makeText(this,"El Bluetooth no está disponible",Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
         if(bluetoothAdapter.isDiscovering())
         {
             bluetoothAdapter.cancelDiscovery()
@@ -27,15 +33,12 @@ class MainActivity : AppCompatActivity() {
 
         //Checking if BLUETOOTH is enabled when we launch the activity
         super.onStart()
-        if(bluetoothAdapter == null)
-        {
-            Toast.makeText(this,"El Bluetooth no está disponible",Toast.LENGTH_SHORT).show()
-            finish()
-        }
-        if(!bluetoothAdapter.isEnabled())
-        {
+
+        if (!bluetoothAdapter.isEnabled) {
             val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, 1)
+            //startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH)
+        } else {
+            //onlineChat = OnlineChat(this, handler)
         }
     }
 }
