@@ -13,8 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if(bluetoothAdapter.isDiscovering())
+        {
+            bluetoothAdapter.cancelDiscovery()
+        }
+        bluetoothAdapter.startDiscovery()
 
-
+        //Registro para
 
     }
 
@@ -30,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         if(!bluetoothAdapter.isEnabled())
         {
             val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH)
+            startActivityForResult(enableIntent, 1)
         }
     }
 }
