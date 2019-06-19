@@ -165,7 +165,7 @@ class OnlineChat(context: Context, handler: Handler) {
     private fun connectionFailed() {
         val msg = handler?.obtainMessage(MESSAGE_TOAST)
         val bundle = Bundle()
-        bundle.putString("toast", "Unable to connect device")
+        bundle.putString("toast", "Imposible conectar con el dispositivo")
         msg?.data = bundle
         handler!!.sendMessage(msg)
 
@@ -176,7 +176,7 @@ class OnlineChat(context: Context, handler: Handler) {
     private fun connectionLost() {
         val msg = handler?.obtainMessage(MESSAGE_TOAST)
         val bundle = Bundle()
-        bundle.putString("toast", "Device connection was lost")
+        bundle.putString("toast", "La conexión del dispositivo se perdió")
         msg?.data = bundle
         handler!!.sendMessage(msg)
 
