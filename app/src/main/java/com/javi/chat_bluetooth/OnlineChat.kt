@@ -163,10 +163,10 @@ class OnlineChat(context: Context, handler: Handler) {
     }
 
     private fun connectionFailed() {
-        val msg = handler!!.obtainMessage(MESSAGE_TOAST)
+        val msg = handler?.obtainMessage(MESSAGE_TOAST)
         val bundle = Bundle()
         bundle.putString("toast", "Unable to connect device")
-        msg.data = bundle
+        msg?.data = bundle
         handler!!.sendMessage(msg)
 
         // Start the service over to restart listening mode
@@ -174,10 +174,10 @@ class OnlineChat(context: Context, handler: Handler) {
     }
 
     private fun connectionLost() {
-        val msg = handler!!.obtainMessage(MESSAGE_TOAST)
+        val msg = handler?.obtainMessage(MESSAGE_TOAST)
         val bundle = Bundle()
         bundle.putString("toast", "Device connection was lost")
-        msg.data = bundle
+        msg?.data = bundle
         handler!!.sendMessage(msg)
 
         // Start the service over to restart listening mode

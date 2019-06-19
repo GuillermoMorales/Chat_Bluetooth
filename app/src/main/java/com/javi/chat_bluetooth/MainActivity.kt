@@ -24,6 +24,7 @@ import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_DEVICE_OBJECT
 import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_READ
 import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_STATE_CHANGE
 import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_TOAST
+import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_WRITE
 import com.javi.chat_bluetooth.UtilClass.Companion.STATE_CONNECTED
 import com.javi.chat_bluetooth.UtilClass.Companion.STATE_CONNECTING
 import com.javi.chat_bluetooth.UtilClass.Companion.STATE_LISTEN
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_ENABLE_BLUETOOTH = 1
     lateinit var connectingDevice: BluetoothDevice
     lateinit var discoveredDevicesAdapter: ArrayAdapter<String>
-    lateinit var chatController: OnlineChat
+    var chatController: OnlineChat? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 STATE_LISTEN, STATE_NONE -> setStatus("Not connected")
             }
-            UtilClass.MESSAGE_WRITE -> {
+            MESSAGE_WRITE -> {
                 val writeBuf = msg.obj as ByteArray
 
                 val writeMessage = String(writeBuf)
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity() {
     })
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_ENABLE_BLUETOOTH -> if (resultCode == Activity.RESULT_OK) {
                 chatController = OnlineChat(this, handler)
@@ -117,14 +119,14 @@ class MainActivity : AppCompatActivity() {
     public override fun onResume() {
         super.onResume()
 
-        if (chatController.getState() == STATE_NONE) {
-            chatController.start()
+        if (chatController?.getState() == STATE_NONE) {
+            chatController?.start()
         }
     }
 
     public override fun onDestroy() {
         super.onDestroy()
-        chatController.stop()
+        chatController!!.stop()
     }
 
     override fun onStart() {
@@ -156,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         btnConnect = findViewById(R.id.btn_connect)
         listView = findViewById(R.id.list)
         inputLayout = findViewById(R.id.input_layout)
-        val btnSend = findViewById(R.id.btn_send)
+        val btnSend = findViewById<Button>(R.id.btn_send)
 
         btnSend.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
@@ -208,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                 pairedDevicesAdapter.add(device.name + "\n" + device.address)
             }
         } else {
-            pairedDevicesAdapter.add(getString(R.string.none_paired))
+            pairedDevicesAdapter.add("No devices have been paired")
         }
 
         //Handling listview item click event
@@ -230,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        dialog.findViewById(R.id.cancelButton).setOnClickListener(View.OnClickListener { dialog.dismiss() })
+        dialog.findViewById<Button>(R.id.cancelButton).setOnClickListener(View.OnClickListener { dialog.dismiss() })
         dialog.setCancelable(false)
         dialog.show()
     }
@@ -246,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
                 if (discoveredDevicesAdapter.count == 0) {
-                    discoveredDevicesAdapter.add(getString(R.string.none_found))
+                    discoveredDevicesAdapter.add("No devices found")
                 }
             }
         }
@@ -255,18 +257,18 @@ class MainActivity : AppCompatActivity() {
     private fun connectToDevice(deviceAddress: String) {
         bluetoothAdapter!!.cancelDiscovery()
         val device = bluetoothAdapter!!.getRemoteDevice(deviceAddress)
-        chatController.connect(device)
+        chatController!!.connect(device)
     }
 
     private fun sendMessage(message: String) {
-        if (chatController.getState() != STATE_CONNECTED) {
+        if (chatController!!.getState() != STATE_CONNECTED) {
             Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (message.isNotEmpty()) {
             val send = message.toByteArray()
-            chatController.write(send)
+            chatController!!.write(send)
         }
     }
 
