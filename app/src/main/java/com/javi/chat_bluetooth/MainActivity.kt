@@ -70,14 +70,14 @@ class MainActivity : AppCompatActivity() {
         when (msg.what) {
             MESSAGE_STATE_CHANGE -> when (msg.arg1) {
                 STATE_CONNECTED -> {
-                    setStatus("Connected to: " + connectingDevice.name)
+                    setStatus("Conectado a: " + connectingDevice.name)
                     btnConnect.isEnabled = false
                 }
                 STATE_CONNECTING -> {
-                    setStatus("Connecting...")
+                    setStatus("Conectando")
                     btnConnect.isEnabled = false
                 }
-                STATE_LISTEN, STATE_NONE -> setStatus("Not connected")
+                STATE_LISTEN, STATE_NONE -> setStatus("Desconectado")
             }
             MESSAGE_WRITE -> {
                 val writeBuf = msg.obj as ByteArray
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             }
             MESSAGE_DEVICE_OBJECT -> {
                 connectingDevice = msg.data.getParcelable(DEVICE_OBJECT)!!
-                Toast.makeText(applicationContext, "Connected to " + connectingDevice.name,
+                Toast.makeText(applicationContext, "Conectado a" + connectingDevice.name,
                         Toast.LENGTH_SHORT).show()
             }
             MESSAGE_TOAST -> Toast.makeText(applicationContext, msg.getData().getString("toast"),
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             REQUEST_ENABLE_BLUETOOTH -> if (resultCode == Activity.RESULT_OK) {
                 chatController = OnlineChat(this, handler)
             } else {
-                Toast.makeText(this, "Bluetooth still disabled, turn off application!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "El bluetooth sigue desactivado, cierra la app", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         btnSend.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 if (inputLayout.editText?.text.toString() == "") {
-                    Toast.makeText(this@MainActivity, "Please input some texts", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Escribe un mensaje", Toast.LENGTH_SHORT).show()
                 } else {
                     //TODO: here
                     sendMessage(inputLayout.editText?.text.toString())
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
     private fun showPrinterPickDialog() {
         dialog = Dialog(this)
         dialog.setContentView(R.layout.layout_bluetooth)
-        dialog.setTitle("Bluetooth Devices")
+        dialog.setTitle("Dispositivos Bluetooth")
 
         if (bluetoothAdapter!!.isDiscovering) {
             bluetoothAdapter!!.cancelDiscovery()
@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                 pairedDevicesAdapter.add(device.name + "\n" + device.address)
             }
         } else {
-            pairedDevicesAdapter.add("No devices have been paired")
+            pairedDevicesAdapter.add("No se emparejó a ningún dispositivo")
         }
 
         //Handling listview item click event
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
                 if (discoveredDevicesAdapter.count == 0) {
-                    discoveredDevicesAdapter.add("No devices found")
+                    discoveredDevicesAdapter.add("No se encontraron dispositivos")
                 }
             }
         }
@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendMessage(message: String) {
         if (chatController!!.getState() != STATE_CONNECTED) {
-            Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Se perdió la conexión", Toast.LENGTH_SHORT).show()
             return
         }
 
