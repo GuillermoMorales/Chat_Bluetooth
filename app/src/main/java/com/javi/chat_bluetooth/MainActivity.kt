@@ -19,6 +19,7 @@ import android.content.Context
 import android.media.session.PlaybackState.STATE_NONE
 import android.os.Handler
 import android.app.Activity
+import android.util.Log
 import com.javi.chat_bluetooth.UtilClass.Companion.DEVICE_OBJECT
 import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_DEVICE_OBJECT
 import com.javi.chat_bluetooth.UtilClass.Companion.MESSAGE_READ
@@ -54,11 +55,20 @@ class MainActivity : AppCompatActivity() {
         //verificando si el dispositivo cuenta con bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
-            Toast.makeText(this, "El Bluetooth no está disponible", Toast.LENGTH_SHORT).show();
-            finish()
+            Toast.makeText(this, "El Bluetooth no está disponible", Toast.LENGTH_SHORT).show()
+            //finish()
         }
         //mostrando los dispositivos disponibles
-        btnConnect.setOnClickListener { showPrinterPickDialog() }
+        btnConnect.setOnClickListener {
+            try{
+                showPrinterPickDialog()
+
+            }
+            catch(e:Exception){
+                Toast.makeText(this, "Algo salio mal, probablemente estas en emulador", Toast.LENGTH_SHORT).show()
+
+            }
+        }
 
         //estableciendo el adaptadr
         chatMessages = ArrayList()
@@ -113,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 chatController = OnlineChat(this, handler)
             } else {
                 Toast.makeText(this, "El bluetooth sigue desactivado, cierra la app", Toast.LENGTH_SHORT).show()
-                finish()
+//                finish()
             }
         }
     }
@@ -127,8 +137,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     public override fun onDestroy() {
-        super.onDestroy()
-        chatController!!.stop()
+        try{
+            super.onDestroy()
+            chatController?.stop()
+
+        }catch(e:Exception){
+            Toast.makeText(this, "Algo salio mal, probablemente estas en emulador", Toast.LENGTH_SHORT).show()
+
+        }
     }
 
     override fun onStart() {
@@ -137,16 +153,21 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "El Bluetooth no está disponible", Toast.LENGTH_SHORT).show()
-            finish()
+//            finish()
         }
 
 
-        if (!bluetoothAdapter!!.isEnabled) {
-            val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH)
-        } else {
-            chatController = OnlineChat(this, handler)
+        try{
+            if (!bluetoothAdapter!!.isEnabled) {
+                val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH)
+            } else {
+                chatController = OnlineChat(this, handler)
 
+
+            }
+        }catch(e:Exception){
+            Toast.makeText(this, "Algo salio mal, probablemente estas en emulador", Toast.LENGTH_SHORT).show()
 
         }
     }
@@ -164,12 +185,17 @@ class MainActivity : AppCompatActivity() {
         //Listener para enviar mensajes
         btnSend.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
-                if (inputLayout.editText?.text.toString() == "") {
-                    Toast.makeText(this@MainActivity, "Escribe un mensaje", Toast.LENGTH_SHORT).show()
-                } else {
-                    sendMessage(inputLayout.editText?.text.toString())
-                    inputLayout.editText?.setText("")
-                }
+               try{
+                   if (inputLayout.editText?.text.toString() == "") {
+                       Toast.makeText(this@MainActivity, "Escribe un mensaje", Toast.LENGTH_SHORT).show()
+                   } else {
+                       sendMessage(inputLayout.editText?.text.toString())
+                       inputLayout.editText?.setText("")
+                   }
+               }catch(e:Exception){
+                   Toast.makeText(this@MainActivity, "Algo salio mal, probablemente estas en emulador", Toast.LENGTH_SHORT).show()
+
+               }
             }
         })
     }
