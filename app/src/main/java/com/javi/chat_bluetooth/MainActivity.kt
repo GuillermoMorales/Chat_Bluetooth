@@ -51,16 +51,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         findViewsByIds()
 
-        //check device support bluetooth or not
+        //verificando si el dispositivo cuenta con bluetooth
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "El Bluetooth no está disponible", Toast.LENGTH_SHORT).show();
             finish()
         }
-        //show bluetooth devices dialog when click connect button
+        //mostrando los dispositivos disponibles
         btnConnect.setOnClickListener { showPrinterPickDialog() }
 
-        //set chat adapter
+        //estableciendo el adaptadr
         chatMessages = ArrayList()
         chatAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, chatMessages)
         listView.adapter = chatAdapter
@@ -106,6 +106,8 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        /*
+        * Realizando peticion para activar el bluetooth si es que no esta activo*/
         when (requestCode) {
             REQUEST_ENABLE_BLUETOOTH -> if (resultCode == Activity.RESULT_OK) {
                 chatController = OnlineChat(this, handler)
@@ -159,13 +161,12 @@ class MainActivity : AppCompatActivity() {
         listView = findViewById(R.id.list)
         inputLayout = findViewById(R.id.input_layout)
         val btnSend = findViewById<Button>(R.id.btn_send)
-
+        //Listener para enviar mensajes
         btnSend.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 if (inputLayout.editText?.text.toString() == "") {
                     Toast.makeText(this@MainActivity, "Escribe un mensaje", Toast.LENGTH_SHORT).show()
                 } else {
-                    //TODO: here
                     sendMessage(inputLayout.editText?.text.toString())
                     inputLayout.editText?.setText("")
                 }
@@ -183,28 +184,28 @@ class MainActivity : AppCompatActivity() {
         }
         bluetoothAdapter!!.startDiscovery()
 
-        //Initializing bluetooth adapters
+        //inicializando los adaptadores de bluetooth
         val pairedDevicesAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
         discoveredDevicesAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1)
 
-        //locate listviews and attatch the adapters
+        //atacheando los listviews en los adaptadores
         val listView = dialog.findViewById(R.id.pairedDeviceList) as ListView
         val listView2 = dialog.findViewById(R.id.discoveredDeviceList) as ListView
         listView.adapter = pairedDevicesAdapter
         listView2.adapter = discoveredDevicesAdapter
 
-        // Register for broadcasts when a device is discovered
+        // Registrando broadcast cada que un dispositivo es encontrado
         var filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
         registerReceiver(discoveryFinishReceiver, filter)
 
-        // Register for broadcasts when discovery has finished
+        // Registrando broadcast cada vez que la busqueda de dispositivos finaliza
         filter = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         registerReceiver(discoveryFinishReceiver, filter)
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val pairedDevices = bluetoothAdapter!!.bondedDevices
 
-        // If there are paired devices, add each one to the ArrayAdapter
+        // Si hay dispositivos disponibles, agregarlos al arreglo de adaptadores
         if (pairedDevices.size > 0) {
             for (device in pairedDevices) {
                 pairedDevicesAdapter.add(device.name + "\n" + device.address)
@@ -213,7 +214,7 @@ class MainActivity : AppCompatActivity() {
             pairedDevicesAdapter.add("No se emparejó a ningún dispositivo")
         }
 
-        //Handling listview item click event
+        //Click listener de cada item del listview
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, view, _, _ ->
             bluetoothAdapter!!.cancelDiscovery()
             val info = (view as TextView).text.toString()
